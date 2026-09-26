@@ -49,7 +49,24 @@ export default function OdontogramaPage(){
     if(!odonto){
       const creado=await supabase
         .from("odontograms")
-        .insert({patient_id:id,data:{}})
+        const { data: creado, error } = await supabase
+        .from("odontograms")
+        .insert({
+          patient_id: id,
+          data: {
+            teeth: {}
+          }
+        })
+        .select()
+        .single();
+
+        if(error){
+          console.log(error);
+          alert("Error guardando odontograma: " + error.message);
+          return;
+        }
+
+        odonto = creado;
         .select("id")
         .maybeSingle();
       if(creado.data){
