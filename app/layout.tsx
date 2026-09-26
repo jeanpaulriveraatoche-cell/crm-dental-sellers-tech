@@ -1,20 +1,31 @@
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext";
 
-export const metadata = {
-  title: "CRM Dental",
-  description: "Gestión integral de centros odontológicos",
-};
 
 export default function RootLayout({
-  children,
+children,
 }: {
-  children: React.ReactNode;
+children: React.ReactNode
 }) {
-  return (
-    <html lang="es">
-      <body>
-        {children}
-      </body>
-    </html>
-  );
+
+
+return (
+
+<html lang="es">
+
+<body>
+
+<AuthProvider>
+
+{children}
+
+</AuthProvider>
+
+
+</body>
+
+</html>
+
+)
+
 }
