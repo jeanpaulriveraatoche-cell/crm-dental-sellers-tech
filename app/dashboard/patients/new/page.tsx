@@ -1,114 +1,110 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
 
 export default function NewPatient(){
 
-const router = useRouter();
+  const router = useRouter();
 
 
-const [clinics,setClinics]=useState<any[]>([]);
+  const [form,setForm] = useState({
+    full_name:"",
+    document:""
+  });
 
 
-const [form,setForm]=useState({
-
-first_name:"",
-last_name:"",
-form.dni
-phone:"",
-email:"",
-birth_date:"",
-gender:"",
-clinic_id:"",
-medical_history:"",
-allergies:""
-
-});
-
-
-useEffect(()=>{
-
-loadClinics();
-
-},[]);
+  const [loading,setLoading] = useState(false);
 
 
 
-async function loadClinics(){
+  const handleChange = (
+    e:React.ChangeEvent<HTMLInputElement>
+  )=>{
 
-const {data}=await supabase
-.from("clinics")
-.select("*");
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
 
-
-setClinics(data || []);
-
-}
-
-
-
-function handleChange(e:any){
-
-setForm({
-
-...form,
-
-[e.target.name]:e.target.value
-
-});
-
-}
+  };
 
 
 
-async function savePatient(){
+  const guardarPaciente = async()=>{
 
+    try{
 
-const {error}=await supabase
-.from("patients")
-.insert([
-{
-  full_name: `${form.first_name} ${form.last_name}`,
-  document: form.document,
-  organization_id:
-  "21665723-b62f-4f20-82a2-b6b8e580c3e0"
-}
-]);
-
-
-if(error){
- console.log(error);
- alert(error.message);
- return;
-}
+      setLoading(true);
 
 
 
-if(error){
+      const {
+        error
+      } = await supabase
+      .from("patients")
+      .insert([
+        {
+          organization_id:
+          "21665723-b62f-4f20-82a2-b6b8e580c3e0",
 
-alert(error.message);
+          full_name:
+          form.full_name,
 
-return;
-
-}
-
-
-alert("Paciente registrado correctamente");
-
-
-router.push("/dashboard/patients");
-
-
-}
+          document:
+          form.document
+        }
+      ]);
 
 
 
-return(
+      if(error){
 
-<div className="p-8">
+        console.log(
+          "ERROR SUPABASE:",
+          error
+        );
+
+        alert(error.message);
+
+        return;
+      }
+
+
+
+      alert(
+        "Paciente registrado correctamente"
+      );
+
+
+      router.push(
+        "/dashboard/pacientes"
+      );
+
+
+    }catch(err:any){
+
+      console.log(err);
+
+      alert(
+        err.message
+      );
+
+    }finally{
+
+      setLoading(false);
+
+    }
+
+  };
+
+
+
+return (
+
+<div className="p-6">
 
 
 <h1 className="text-3xl font-bold mb-6">
@@ -117,116 +113,109 @@ Nuevo Paciente
 
 
 
-<div className="bg-white rounded-xl shadow p-6 grid gap-4 max-w-3xl">
+<div className="bg-white border rounded-xl p-6 max-w-xl space-y-5">
+
+
+
+<div>
+
+<label className="block mb-2 font-medium">
+Nombre completo
+</label>
 
 
 <input
-name="first_name"
-placeholder="Nombres"
-className="border p-3 rounded"
+
+name="full_name"
+
+value={form.full_name}
+
 onChange={handleChange}
+
+className="
+w-full
+border
+rounded-lg
+p-3
+"
+
+placeholder="Ejemplo: Juan Pérez"
+
 />
 
+</div>
+
+
+
+
+<div>
+
+<label className="block mb-2 font-medium">
+Documento
+</label>
+
 
 <input
-name="last_name"
-placeholder="Apellidos"
-className="border p-3 rounded"
+
+name="document"
+
+value={form.document}
+
 onChange={handleChange}
-/>
 
+className="
+w-full
+border
+rounded-lg
+p-3
+"
 
-<input
-name="dni"
 placeholder="DNI"
-className="border p-3 rounded"
-onChange={handleChange}
+
 />
 
-
-<input
-name="phone"
-placeholder="Teléfono"
-className="border p-3 rounded"
-onChange={handleChange}
-/>
+</div>
 
 
-<input
-name="email"
-placeholder="Correo"
-className="border p-3 rounded"
-onChange={handleChange}
-/>
-
-
-
-<select
-name="clinic_id"
-className="border p-3 rounded"
-onChange={handleChange}
->
-
-
-<option>
-Seleccione sede
-</option>
-
-
-{
-clinics.map(c=>(
-
-<option key={c.id} value={c.id}>
-
-{c.name}
-
-</option>
-
-))
-}
-
-
-</select>
-
-
-
-<textarea
-name="medical_history"
-placeholder="Historia médica"
-className="border p-3 rounded"
-onChange={handleChange}
-/>
-
-
-
-<textarea
-name="allergies"
-placeholder="Alergias"
-className="border p-3 rounded"
-onChange={handleChange}
-/>
 
 
 
 <button
 
-onClick={savePatient}
+onClick={guardarPaciente}
 
-className="bg-blue-600 text-white p-3 rounded-lg"
+disabled={loading}
+
+className="
+bg-blue-600
+text-white
+px-6
+py-3
+rounded-xl
+"
 
 >
 
-Guardar Paciente
+
+{
+loading
+?
+"Guardando..."
+:
+"Guardar paciente"
+}
+
 
 </button>
 
 
-</div>
-
 
 </div>
 
 
-)
+</div>
+
+
+);
 
 }
