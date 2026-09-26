@@ -1,162 +1,111 @@
 "use client";
 
-import { useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { useRouter } from "next/navigation";
+import {useState} from "react";
+import {supabase} from "@/lib/supabase";
+import {useRouter} from "next/navigation";
 
-export default function NewPatientPage() {
 
-  const router = useRouter();
+export default function NewPatient(){
 
-  const [loading, setLoading] = useState(false);
+const router=useRouter();
 
-  const [form, setForm] = useState({
-    full_name: "",
-    document: "",
-  });
+const [name,setName]=useState("");
+const [document,setDocument]=useState("");
+const [error,setError]=useState("");
 
 
-  const guardarPaciente = async () => {
+async function savePatient(){
 
-    if (!form.full_name) {
-      alert("Ingrese el nombre del paciente");
-      return;
-    }
+setError("");
 
+if(!name){
+setError("Ingrese nombre");
+return;
+}
 
-    setLoading(true);
 
+const {error}=await supabase
+.from("patients")
+.insert({
 
-    const { data, error } = await supabase
-      .from("patients")
-      .insert([
-        {
-          organization_id: "d7edf338-7531-445b-ab97-2a5e6cb8e906",
-          full_name: form.full_name,
-          document: form.document,
-        }
-      ])
-      .select();
+organization_id:
+"d7efd338-7531-445b-ab97-2a5e6cb8e906",
 
+full_name:name,
 
-    if (error) {
+document:document
 
-      console.error("ERROR SUPABASE:", error);
+});
 
-      alert(
-        "Error guardando paciente: " + error.message
-      );
 
-      setLoading(false);
-      return;
-    }
+if(error){
 
+console.log(error);
 
-    console.log("Paciente creado:", data);
+setError(error.message);
 
+return;
 
-    alert("Paciente registrado correctamente");
+}
 
 
-    router.push("/dashboard/pacientes");
+alert("Paciente guardado");
 
+router.push("/dashboard/patients");
 
-  };
+}
 
 
-  return (
 
-    <div className="p-6">
+return(
 
+<div className="p-8">
 
-      <h1 className="text-3xl font-bold mb-6">
-        Nuevo Paciente
-      </h1>
+<h1 className="text-3xl font-bold">
+Nuevo Paciente
+</h1>
 
 
-      <div className="bg-white border rounded-xl p-6 max-w-xl space-y-5">
+<div className="bg-white p-6 rounded-xl mt-6">
 
 
-        <div>
+<input
+className="border p-3 w-full mb-3"
+placeholder="Nombre completo"
+value={name}
+onChange={e=>setName(e.target.value)}
+/>
 
-          <label className="block mb-2 font-medium">
-            Nombre completo
-          </label>
 
-          <input
+<input
+className="border p-3 w-full mb-3"
+placeholder="DNI"
+value={document}
+onChange={e=>setDocument(e.target.value)}
+/>
 
-            className="w-full border rounded-lg p-3"
 
-            value={form.full_name}
+<button
+onClick={savePatient}
+className="bg-blue-600 text-white px-6 py-3 rounded"
+>
+Guardar paciente
+</button>
 
-            onChange={(e)=>
-              setForm({
-                ...form,
-                full_name:e.target.value
-              })
-            }
 
-            placeholder="Ejemplo: Juan Pérez"
+{
+error &&
+<p className="text-red-600 mt-3">
+{error}
+</p>
+}
 
-          />
 
-        </div>
+</div>
 
 
+</div>
 
-        <div>
-
-          <label className="block mb-2 font-medium">
-            Documento
-          </label>
-
-          <input
-
-            className="w-full border rounded-lg p-3"
-
-            value={form.document}
-
-            onChange={(e)=>
-              setForm({
-                ...form,
-                document:e.target.value
-              })
-            }
-
-            placeholder="DNI"
-
-          />
-
-        </div>
-
-
-
-        <button
-
-          onClick={guardarPaciente}
-
-          disabled={loading}
-
-          className="bg-blue-600 text-white px-6 py-3 rounded-xl"
-
-        >
-
-          {
-            loading
-            ? "Guardando..."
-            : "Guardar paciente"
-          }
-
-
-        </button>
-
-
-
-      </div>
-
-
-    </div>
-
-  );
+)
 
 }

@@ -89,26 +89,41 @@ export default function OdontogramaPage(){
     setEstados(data || []);
   }
 
-  async function guardarCondicion(condition:string){
+async function guardarCondicion(condicion:string){
 
-  if(!odontograma || !pieza) return;
+if(!odontograma || !pieza) return;
 
 
-  // guardar diagnóstico
-  const {error}=await supabase
-  .from("teeth_conditions")
-  .upsert(
-  {
-   odontogram_id:odontograma,
-   tooth_number:pieza,
-   condition:condition,
-   surface:"General",
-   notes:"Registrado desde CRM Dental SELLERS TECH"
-  },
-  {
-   onConflict:"odontogram_id,tooth_number"
-  }
-  );
+const {data,error}=await supabase
+.from("odontograms")
+.update({
+
+data:{
+[dienteActual]:condicion
+}
+
+})
+.eq("id",odontograma)
+.select();
+
+
+if(error){
+
+console.log(error);
+
+setMensaje(error.message);
+
+return;
+
+}
+
+
+setMensaje(
+"Diagnóstico guardado correctamente"
+);
+
+
+}
 
 
   if(!error){
