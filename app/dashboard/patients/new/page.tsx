@@ -17,7 +17,7 @@ const [form,setForm]=useState({
 
 first_name:"",
 last_name:"",
-dni:"",
+form.dni
 phone:"",
 email:"",
 birth_date:"",
@@ -69,14 +69,21 @@ async function savePatient(){
 
 const {error}=await supabase
 .from("patients")
-.insert([{
+.insert([
+{
+  full_name: `${form.first_name} ${form.last_name}`,
+  document: form.document,
+  organization_id:
+  "21665723-b62f-4f20-82a2-b6b8e580c3e0"
+}
+]);
 
-...form,
 
-organization_id:
-"21665723-b62f-4f20-82a2-b6b8e580c3e0"
-
-}]);
+if(error){
+ console.log(error);
+ alert(error.message);
+ return;
+}
 
 
 
