@@ -31,7 +31,7 @@ export default function NewPatientPage() {
       .from("patients")
       .insert([
         {
-          organization_id: "21665723-b62f-4f20-82a2-b6b8e580c3e0",
+          organization_id: "d7edf338-7531-445b-ab97-2a5e6cb8e906",
           full_name: form.full_name,
           document: form.document,
         }
