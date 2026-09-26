@@ -10,7 +10,7 @@ export default function PatientsPage() {
   const [document,setDocument]=useState("");
 
   const organization_id =
-  "d7efd338-7531-445b-ab97-2a5e6cb8e906";
+  "d7edf338-7531-445b-ab97-2a5e6cb8e906";
 
 
   async function loadPatients(){
@@ -33,15 +33,40 @@ export default function PatientsPage() {
     if(!name) return;
 
 
-    await supabase
-    .from("patients")
-    .insert({
+    async function savePatient(){
 
-      organization_id,
-      full_name:name,
-      document
+      if(!name) return;
 
-    });
+
+      const {data,error}=await supabase
+      .from("patients")
+      .insert({
+
+        organization_id,
+        full_name:name,
+        document:document
+
+      });
+
+
+      if(error){
+
+        console.log("ERROR GUARDANDO PACIENTE:", error);
+        alert(error.message);
+        return;
+
+      }
+
+
+      alert("Paciente guardado correctamente");
+
+
+      setName("");
+      setDocument("");
+
+      loadPatients();
+
+    }
 
 
     setName("");
