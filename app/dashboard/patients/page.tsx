@@ -35,18 +35,50 @@ export default function PatientsPage() {
 
     async function savePatient(){
 
-      if(!name) return;
+    if(!name){
+    alert("Ingrese nombre");
+    return;
+    }
 
 
-      const {data,error}=await supabase
-      .from("patients")
-      .insert({
+    const {data,error}=await supabase
+    .from("patients")
+    .insert([
+    {
+    organization_id:
+    "d7efd338-7531-445b-ab97-2a5e6cb8e906",
 
-        organization_id,
-        full_name:name,
-        document:document
+    full_name:name,
 
-      });
+    document:document
+    }
+    ])
+    .select();
+
+
+    if(error){
+
+    console.log("ERROR SUPABASE:",error);
+
+    alert(error.message);
+
+    return;
+
+    }
+
+
+    console.log("PACIENTE CREADO:",data);
+
+
+    alert("Paciente guardado correctamente");
+
+
+    setName("");
+    setDocument("");
+
+    loadPatients();
+
+    }
 
 
       if(error){
